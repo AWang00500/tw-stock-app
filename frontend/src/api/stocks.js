@@ -13,8 +13,18 @@ function createStockApiError(status, errorCode) {
 // 輸入來源：查詢頁傳入的股票代碼與可選取消訊號。
 // 預期輸出：成功時回傳股票資料，失敗時拋出含狀態與代碼的錯誤。
 export async function fetchStockByCode(stockCode, { signal } = {}) {
+  // 功能說明：正式 Electron 頁面使用本機服務注入的 Token 驗證 API 請求。
+  // 輸入來源：首頁 meta 欄位；開發模式沒有此欄位，仍由 Vite Proxy 處理。
+  // 預期輸出：正式請求附帶驗證 header，並保留原本的取消請求 signal。
+  const appToken =
+    typeof document === 'undefined'
+      ? null
+      : document.querySelector('meta[name="desktop-api-token"]')?.getAttribute('content')
+  const headers = appToken ? { 'X-App-Token': appToken } : undefined
+
   const response = await fetch(`/api/stocks/${encodeURIComponent(stockCode)}`, {
     method: 'GET',
+    headers,
     signal,
   })
 

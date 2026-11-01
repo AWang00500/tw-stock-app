@@ -5,6 +5,7 @@ const { app, BrowserWindow, dialog } = require('electron');
 const http = require('node:http');
 const { spawn } = require('node:child_process');
 const path = require('node:path');
+const { startLocalServer } = require('./local-server');
 
 const BACKEND_HEALTH_URL = 'http://127.0.0.1:8080/api/health';
 const BACKEND_WORKING_DIRECTORY = path.resolve(__dirname, '../backend');
@@ -21,11 +22,13 @@ let backendReady = false;
 let allowAppQuit = false;
 let cleanupInProgress = false;
 let mainWindow = null;
+let localServer = null;
+let frontendUrl = null;
 
-// 功能說明：建立並顯示主要視窗。
-// 輸入來源：函式內設定的尺寸、安全選項及 Vite 開發伺服器網址。
-// 預期輸出：開啟載入 Vue 開發頁面的 1000×700 視窗。
-function createWindow() {
+// 功能說明：建立主要視窗並載入已選定的 Vue 前端網址。
+// 輸入來源：後端健康檢查後選出的 Vite 或 Electron 本機服務網址。
+// 預期輸出：開啟套用安全設定的 1000×700 Vue 視窗。
+function createWindow(frontendUrl) {
   mainWindow = new BrowserWindow({
     width: 1000,
     height: 700,
@@ -39,7 +42,10 @@ function createWindow() {
     mainWindow = null;
   });
 
-  mainWindow.loadURL('http://localhost:5173');
+  mainWindow.loadURL(frontendUrl).catch((error) => {
+    dialog.showErrorBox('前端載入失敗', error.message);
+    app.quit();
+  });
 }
 
 // 功能說明：向本機健康檢查網址確認 8080 連接埠提供的是本專案後端。
@@ -249,20 +255,54 @@ function waitForBackendProcessExit() {
   });
 }
 
+// 功能說明：關閉 Electron 建立的前端服務，並清理本程式自行啟動的後端。
+// 輸入來源：目前儲存的本機服務與 Maven 程序參照。
+// 預期輸出：本機服務停止，且不影響 Electron 啟動前已存在的後端。
+async function cleanupOwnedResources() {
+  let cleanupError = null;
+
+  if (localServer) {
+    const serverToClose = localServer;
+    localServer = null;
+
+    try {
+      await serverToClose.close();
+    } catch (error) {
+      cleanupError = error;
+    }
+  }
+
+  try {
+    await stopOwnedBackendProcess();
+  } catch (error) {
+    cleanupError ||= error;
+  }
+
+  if (cleanupError) {
+    throw cleanupError;
+  }
+}
+
 // 功能說明：等 Electron 初始化完成後建立視窗，並在 macOS 重新啟用時補開視窗。
 // 輸入來源：Electron 的就緒與 activate 事件。
 // 預期輸出：應用程式啟動或重新啟用時有可用視窗。
 app.whenReady().then(() => {
   app.on('activate', () => {
-    if (backendReady && BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
+    if (backendReady && frontendUrl && BrowserWindow.getAllWindows().length === 0) {
+      createWindow(frontendUrl);
     }
   });
 
   ensureBackendReady()
-    .then(() => {
+    .then(async () => {
+      if (app.isPackaged || process.env.ELECTRON_LOAD_BUILT_VUE === '1') {
+        localServer = await startLocalServer();
+        frontendUrl = localServer.url;
+      } else {
+        frontendUrl = 'http://localhost:5173';
+      }
       backendReady = true;
-      createWindow();
+      createWindow(frontendUrl);
     })
     .catch((error) => {
       dialog.showErrorBox('無法啟動台股服務', error.message);
@@ -271,7 +311,10 @@ app.whenReady().then(() => {
 });
 
 app.on('before-quit', (event) => {
-  if (allowAppQuit || !backendProcess || backendProcess.exitCode !== null) {
+  const hasRunningOwnedBackend =
+    backendProcess && backendProcess.exitCode === null && backendProcess.signalCode === null;
+
+  if (allowAppQuit || (!localServer && !hasRunningOwnedBackend)) {
     return;
   }
 
@@ -282,7 +325,7 @@ app.on('before-quit', (event) => {
   }
 
   cleanupInProgress = true;
-  stopOwnedBackendProcess()
+  cleanupOwnedResources()
     .then(() => {
       allowAppQuit = true;
       app.quit();

@@ -7,7 +7,8 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 // 功能說明：集中設定 Vite 的前端建置與開發行為。
 // 輸入來源：下方的外掛、伺服器與路徑別名設定。
 // 預期輸出：提供 Vue 開發伺服器及模組解析設定。
-export default defineConfig({
+export default defineConfig(({ command }) => ({
+  base: command === 'build' ? './' : '/',
   // 功能說明：啟用 Vue 單檔元件與開發工具外掛。
   // 輸入來源：本檔載入的 Vite 外掛。
   // 預期輸出：Vite 可處理 Vue 元件並提供開發輔助工具。
@@ -35,4 +36,4 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
-})
+}))
