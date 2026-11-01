@@ -1,0 +1,45 @@
+:root {
+  font-family: 'Aptos', 'Noto Sans TC', 'Microsoft JhengHei UI', sans-serif;
+  color: #172033;
+  background: #f5f7fb;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  --color-text: #172033;
+  --color-muted: #788397;
+  --color-primary: #2563eb;
+  --color-border: #e7ebf2;
+  --color-surface: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid rgb(37 99 235 / 22%);
+  outline-offset: 2px;
+}
+
+::selection {
+  color: #123b8f;
+  background: #dce8ff;
+}
