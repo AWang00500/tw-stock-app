@@ -1,4 +1,7 @@
 <script setup>
+// 功能說明：接收昨日交易資料並提供價格格式化函式。
+// 輸入來源：父元件傳入的 trade 物件及其中的價格數值。
+// 預期輸出：可供畫面呈現的交易資料與千分位價格文字。
 defineProps({
   trade: {
     type: Object,
@@ -6,6 +9,9 @@ defineProps({
   },
 })
 
+// 功能說明：將價格轉成繁體中文地區格式，最多顯示兩位小數。
+// 輸入來源：交易資料中的價格數值。
+// 預期輸出：格式化後的價格字串。
 function formatPrice(value) {
   return new Intl.NumberFormat('zh-TW', {
     minimumFractionDigits: 0,
@@ -15,6 +21,11 @@ function formatPrice(value) {
 </script>
 
 <template>
+  <!--
+  功能說明：呈現最近交易日期、開收盤價與價差。
+  輸入來源：父元件傳入的 trade 資料。
+  預期輸出：顯示昨日行情及依價差正負套用的提示樣式。
+  -->
   <article class="info-card latest-card">
     <div class="card-heading">
       <div>
@@ -46,6 +57,11 @@ function formatPrice(value) {
 </template>
 
 <style scoped>
+/*
+功能說明：設定最近交易卡片、價格列與漲跌提示的外觀。
+輸入來源：行情卡片結構及價差狀態 class。
+預期輸出：將交易資訊排列成容易閱讀的卡片。
+*/
 .info-card {
   min-width: 0;
   padding: 20px 20px 17px;

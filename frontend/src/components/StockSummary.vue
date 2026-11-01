@@ -1,4 +1,7 @@
 <script setup>
+// 功能說明：接收股票代碼、名稱文字與查詢月份，並整理顯示用名稱。
+// 輸入來源：父頁面提供的股票摘要 props。
+// 預期輸出：供摘要區顯示代碼、名稱及月份。
 import { computed } from 'vue'
 
 const props = defineProps({
@@ -16,6 +19,9 @@ const props = defineProps({
   },
 })
 
+// 功能說明：從 API 標題文字擷取股票名稱，擷取不到時使用股票代碼。
+// 輸入來源：props.title 與 props.stockCode。
+// 預期輸出：回傳供摘要標題顯示的股票名稱。
 const stockName = computed(() => {
   const titlePattern = new RegExp(
     `(?:^|\\s)${props.stockCode}\\s+(.+?)\\s*各日成交資訊\\s*$`,
@@ -27,6 +33,11 @@ const stockName = computed(() => {
 </script>
 
 <template>
+  <!--
+  功能說明：呈現股票代碼、整理後的名稱及查詢月份。
+  輸入來源：父元件傳入的股票摘要 props。
+  預期輸出：顯示股票識別與查詢期間摘要。
+  -->
   <section class="summary" aria-label="股票摘要">
     <div class="identity">
       <span class="stock-code">{{ stockCode }}</span>
@@ -42,6 +53,11 @@ const stockName = computed(() => {
 </template>
 
 <style scoped>
+/*
+功能說明：設定股票摘要卡片及窄螢幕下的排列。
+輸入來源：摘要元件的結構與螢幕寬度。
+預期輸出：清楚排列股票識別資訊與查詢月份。
+*/
 .summary {
   display: flex;
   min-height: 100px;

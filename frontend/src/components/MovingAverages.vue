@@ -1,4 +1,7 @@
 <script setup>
+// 功能說明：接收均線資料並提供可顯示的數值格式。
+// 輸入來源：父元件傳入的 averages 物件。
+// 預期輸出：供畫面顯示的 MA5、MA10 數值或無資料文字。
 defineProps({
   averages: {
     type: Object,
@@ -6,6 +9,9 @@ defineProps({
   },
 })
 
+// 功能說明：處理均線值為空或有效數字的顯示格式。
+// 輸入來源：averages 中的單一均線值。
+// 預期輸出：無資料提示或格式化後的均線字串。
 function formatAverage(value) {
   if (value === null) {
     return '資料不足'
@@ -19,6 +25,11 @@ function formatAverage(value) {
 </script>
 
 <template>
+  <!--
+  功能說明：呈現 MA5 與 MA10 均線及補充說明。
+  輸入來源：父元件傳入的 averages 資料。
+  預期輸出：顯示可用均線數值，並標示無資料的項目。
+  -->
   <article class="info-card">
     <p class="card-kicker">MOVING AVERAGES</p>
     <h3>移動平均</h3>
@@ -37,6 +48,11 @@ function formatAverage(value) {
 </template>
 
 <style scoped>
+/*
+功能說明：設定均線卡片、週期標記及無資料數值的外觀。
+輸入來源：本元件的卡片結構與 unavailable 狀態。
+預期輸出：讓均線週期和數值狀態容易辨識。
+*/
 .info-card {
   min-width: 0;
   padding: 20px;

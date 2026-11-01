@@ -1,4 +1,7 @@
 <script setup>
+// 功能說明：準備表單輸入值並連接股票查詢狀態。
+// 輸入來源：使用者透過表單輸入的代碼及 useStockQuery 回傳資料。
+// 預期輸出：供模板觸發查詢並依狀態顯示結果。
 import { ref } from 'vue'
 import LatestTrade from '../components/LatestTrade.vue'
 import MonthlyRange from '../components/MonthlyRange.vue'
@@ -20,6 +23,11 @@ const {
 </script>
 
 <template>
+  <!--
+  功能說明：呈現頁首品牌與目前連線環境標示。
+  輸入來源：頁面固定文字。
+  預期輸出：顯示股票應用程式名稱及 API 環境標籤。
+  -->
   <div class="page-shell">
     <header class="topbar">
       <a class="brand" href="/" aria-label="台股查詢首頁">
@@ -29,6 +37,11 @@ const {
       <span class="environment-label"><span class="status-dot"></span>Spring Boot API</span>
     </header>
 
+    <!--
+    功能說明：呈現查詢介紹、表單、查詢狀態及成功後的股票摘要。
+    輸入來源：表單輸入與查詢 composable 提供的狀態、錯誤和股票資料。
+    預期輸出：依查詢進度顯示載入、錯誤、閒置或結果內容。
+    -->
     <main class="main-content">
       <section class="intro" aria-labelledby="page-title">
         <p class="eyebrow">TAIWAN STOCKS</p>
@@ -55,6 +68,11 @@ const {
         輸入股票代號後開始查詢。
       </p>
 
+      <!--
+      功能說明：查詢成功且有股票資料時顯示摘要及各項行情卡片。
+      輸入來源：查詢回傳的 stock 欄位。
+      預期輸出：呈現股票名稱、日期、成交與區間及均線資料。
+      -->
       <section v-if="stock" class="results" aria-labelledby="result-heading">
         <div class="section-heading">
           <div>
@@ -83,6 +101,11 @@ const {
 </template>
 
 <style scoped>
+/*
+功能說明：設定查詢頁各區塊、狀態訊息及小螢幕版面的外觀。
+輸入來源：本元件的 class 與畫面寬度。
+預期輸出：形成有層次且可隨螢幕寬度調整的查詢頁版面。
+*/
 .page-shell {
   min-height: 100vh;
   padding: 0 32px;

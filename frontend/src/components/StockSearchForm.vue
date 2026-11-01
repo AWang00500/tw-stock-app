@@ -1,4 +1,7 @@
 <script setup>
+// 功能說明：接收輸入值、提示與載入狀態，並定義回傳給父元件的事件。
+// 輸入來源：父頁面透過 props 傳入的資料。
+// 預期輸出：提供表單顯示所需狀態及更新、搜尋事件。
 const props = defineProps({
   modelValue: {
     type: String,
@@ -16,16 +19,27 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue', 'search'])
 
+// 功能說明：將輸入框的新文字通知父元件更新綁定值。
+// 輸入來源：使用者輸入所觸發的 input 事件。
+// 預期輸出：送出 update:modelValue 事件及輸入文字。
 function handleInput(event) {
   emit('update:modelValue', event.target.value)
 }
 
+// 功能說明：送出表單中的股票代碼並移除前後空白。
+// 輸入來源：目前的 modelValue 表單值。
+// 預期輸出：送出 search 事件及整理後的代碼。
 function handleSubmit() {
   emit('search', props.modelValue.trim())
 }
 </script>
 
 <template>
+  <!--
+  功能說明：呈現股票代碼輸入框、搜尋按鈕與提示文字。
+  輸入來源：父元件傳入的 modelValue、loading、notice，以及使用者輸入。
+  預期輸出：顯示可輸入及送出查詢的表單，並透過事件回報父元件。
+  -->
   <form class="search-panel" :aria-busy="loading" @submit.prevent="handleSubmit">
     <label for="stock-code">股票代號</label>
     <div class="search-controls">
@@ -51,6 +65,11 @@ function handleSubmit() {
 </template>
 
 <style scoped>
+/*
+功能說明：設定查詢表單、輸入框、按鈕及提示文字的外觀。
+輸入來源：本元件的表單結構與狀態 class。
+預期輸出：呈現可辨識且適合窄螢幕的搜尋介面。
+*/
 .search-panel {
   padding: 22px 24px 17px;
   border: 1px solid #e7ebf2;

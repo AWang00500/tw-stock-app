@@ -1,3 +1,8 @@
+/*
+功能說明：設定整個前端共用的字型、色彩與基礎互動樣式。
+輸入來源：全站 HTML 元素及 CSS 變數。
+預期輸出：統一頁面底色、文字、表單控制項與焦點提示外觀。
+*/
 :root {
   font-family: 'Aptos', 'Noto Sans TC', 'Microsoft JhengHei UI', sans-serif;
   color: #172033;
